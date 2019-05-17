@@ -1,0 +1,57 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.10.RELEASE'
+		springCloudVersion = 'Dalston.SR1'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.adundar'
+version = '1.0.0'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+
+repositories {
+	mavenCentral()
+}
+
+
+jar {
+    baseName = 'user-service'
+    version = '0.0.1'
+}
+
+configurations.all {
+    exclude module: 'slf4j-log4j12'
+}
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web'){
+        exclude module: 'spring-boot-starter-tomcat'
+    }
+	compile("org.springframework.boot:spring-boot-starter-data-mongodb")	
+	compile("org.springframework.cloud:spring-cloud-starter-eureka")
+	compile("org.springframework.cloud:spring-cloud-starter-feign") 
+	compile("org.springframework.cloud:spring-cloud-starter-hystrix")
+	compile("org.springframework.boot:spring-boot-starter-jetty")
+	compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile('org.springframework.kafka:spring-kafka')
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+}

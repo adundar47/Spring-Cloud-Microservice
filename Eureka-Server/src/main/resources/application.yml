@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: eureka-server
+    
+server:
+  port: 8761
+  
+eureka:
+  instance:
+    appname: eureka
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 10
+    lease-expiration-duration-in-seconds: 30
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+  server:
+    waitTimeInMsWhenSyncEmpty: 0

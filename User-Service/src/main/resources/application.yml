@@ -1,0 +1,94 @@
+spring:
+  application:
+    name: user-service
+  data:
+    mongodb:
+      host: 172.22.47.47
+      port: 27017
+      database: user
+  kafka:
+      bootstrap-servers: 172.22.47.47:9092
+      producer:
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+          value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+       
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    health-check-url: /health 
+    preferIpAddress: true
+    lease-expiration-duration-in-seconds: 10
+  client:
+    serviceUrl:
+      defaultZone: http://172.22.47.47:8761/eureka/
+    registryFetchIntervalSeconds: 5      
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000      
+   
+server:
+  port: 8081           
+
+kafka:
+    topic:           
+        createUser: create_user
+        updateUser: update_user
+        deleteUser: delete_user
+
+---  
+spring:
+  profiles: lab
+  data:
+    mongodb:
+      #uri: mongodb://mongo:27017/user
+      host: mongo
+      port: 27017
+      database: user
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+        group-id: user-service
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        auto-offset-reset: earliest
+        enable-auto-commit: true      
+  cloud:
+    inetutils:
+      preferredNetworks:
+        - 172.
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    health-check-url: /health 
+    preferIpAddress: true
+    lease-expiration-duration-in-seconds: 10
+    ip-address: 172.22.47.47
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
+    registryFetchIntervalSeconds: 5
+
+logging:
+  level:
+    com.adundar: DEBUG
+    org.springframework.cloud.netflix.zuul: DEBUG
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+server:
+  port: 8081    

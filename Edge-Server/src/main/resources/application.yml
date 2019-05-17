@@ -1,0 +1,83 @@
+server:
+  port: 8765
+
+info:
+  component: Edge Server
+
+spring:
+  application:
+    name: edge-server
+
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    health-check-url: /health 
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    registryFetchIntervalSeconds: 5
+logging:
+  level:
+    com.adundar: DEBUG
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+
+zuul:
+  add-host-header: true
+  sensitive-headers: 
+  ignoredServices: "*"
+  routes:
+    user-service:
+      path: /api/v1/users/**
+      strip-prefix: false
+    message-service:
+      path: /api/v1/messages/**
+      strip-prefix: false      
+    auth-server:
+      path: /api/v1/auth/**
+      strip-prefix: false
+  
+ribbon:
+  ReadTimeout: 180000
+  ConnectTimeout: 180000
+  
+---  
+spring:
+  profiles: lab
+  cloud:
+    inetutils:
+      preferredNetworks:
+        - 172.
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    health-check-url: /health 
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
+    registryFetchIntervalSeconds: 5
+
+logging:
+  level:
+    com.adundar: DEBUG
+    org.springframework.cloud.netflix.zuul: DEBUG
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+server:
+  port: 8765  

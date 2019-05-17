@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  eureka-server:
+    build:
+      context: ../Eureka-Server
+      dockerfile: ./Dockerfile
+
+  edge-server:
+    build:
+      context: ../Edge-Server
+      dockerfile: ./Dockerfile
+
+  user-service:
+    build:
+      context: ../User-Service
+      dockerfile: ./Dockerfile
+
+  message-service:
+    build:
+      context: ../Message-Service
+      dockerfile: ./Dockerfile

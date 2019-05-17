@@ -1,0 +1,101 @@
+version: '3'
+services:
+  eureka-server:
+    image: adundar/eureka-server:0.0.1
+    container_name: eurekaServer
+    ports:
+    - "8761:8761"
+    restart: always
+    networks:
+      mc-net:
+        ipv4_address: 172.35.45.3
+
+  edge-server:
+    image: adundar/edge-server:0.0.1
+    container_name: edgeServer
+    restart: always
+    ports:
+    - "8765:8765"
+    networks:
+      mc-net:
+        ipv4_address: 172.35.45.4
+
+  mongo:
+    image: mongo
+    container_name: mongodb
+    volumes:
+    - /mongodb-data:/data/db
+    ports:
+    - "27017:27017"
+    restart: always
+    networks:
+      mc-net:
+        ipv4_address: 172.35.45.5
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    container_name: zookeeper
+    user: root
+    ports:
+      - '2181:2181'
+    restart: always
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    volumes:
+      - /zookeeper-data:/bitnami/zookeeper     
+    networks:
+      mc-net:
+        ipv4_address: 172.35.45.6
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka
+    user: root
+    ports:
+      - '9092:9092'
+    restart: always
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://172.22.47.47:9092
+    volumes:
+      - /kafka-data:/bitnami/kafka  
+    networks:
+      mc-net:
+        ipv4_address: 172.35.45.7
+
+  user-service:
+    image: adundar/user-service:0.0.1
+    restart: always
+    ports:
+    - "8081:8081"
+    networks:
+      mc-net:
+        ipv4_address: 172.35.45.8
+
+  message-service:
+    image: adundar/message-service:0.0.1
+    restart: always
+    ports:
+    - "8082:8082"
+    networks:
+      mc-net:
+        ipv4_address: 172.35.45.9
+
+  nginx:
+    image: nginx:1.10
+    volumes:
+    - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+    - "80:80"
+    restart: always
+    networks:
+      mc-net:
+        ipv4_address: 172.35.45.10
+
+networks:
+  mc-net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.35.45.0/24
