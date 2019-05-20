@@ -17,8 +17,8 @@ Vagrant.configure("2") do |config|
       
       node.vm.provision "shell", inline: "sudo apt-get -y update"
      
-      node.vm.provision "shell", inline: "sudo /bin/bash /vagrant/scripts/docker-setup.sh"
-      node.vm.provision "shell", inline: "sudo /bin/bash /vagrant/scripts/tools-setup.sh"
+      node.vm.provision "shell", path: "scripts/docker-setup.sh"
+      node.vm.provision "shell", path: "scripts/tools-setup.sh"
 
       node.vm.provision "shell", inline: $docker_host_override_conf, privileged: true
       node.vm.provision "shell", inline: $docker_host_daemon_conf, privileged: true
